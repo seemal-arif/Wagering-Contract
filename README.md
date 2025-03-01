@@ -4,7 +4,7 @@ A secure USDT-based wagering contract enabling player deposits, match creation, 
 ## Deployment Details  
 - **Network:** Arbitrum Sepolia  
 - **Contract Address:** `0xC1FF2ebaf5a6F96cfD2dF9B3EF9d9E80c1e1bbe7`  
-- **Block Explorer:** [Arbiscan Link]([https://sepolia.arbiscan.io/address/0xYourDeployedContractAddressHere](https://sepolia.arbiscan.io/address/0xC1FF2ebaf5a6F96cfD2dF9B3EF9d9E80c1e1bbe7#code))
+- **Block Explorer:** [Arbiscan Link](https://sepolia.arbiscan.io/address/0xC1FF2ebaf5a6F96cfD2dF9B3EF9d9E80c1e1bbe7#code)
   
  --- 
 ### Modifiers:
