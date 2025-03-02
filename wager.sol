@@ -5,14 +5,14 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract USDTWager is Ownable, ReentrancyGuard {
+contract TLNWager is Ownable, ReentrancyGuard {
     
     using SafeERC20 for IERC20;
-    IERC20 public immutable USDTToken;
+    IERC20 public immutable TLNToken;
 
     address public moderator;
     address public gasFeeHolderAccount;
-    uint256 public minDeposit = 5 * 1e18;                // Minimum 5 USDT 
+    uint256 public minDeposit = 5 * 1e18;                // Minimum 5 TLN 
     uint256 public winnerPercentage = 8000;              // Default 80% (1bps = 100) winnerPercentage for users
     uint256 public xrpNFTHolderPercentage = 9000;        // Default 90% winner percentage for users
     uint256 public userRefundPercentage = 9000;          // Default 90% refund for unmatched users
@@ -51,18 +51,18 @@ contract USDTWager is Ownable, ReentrancyGuard {
     event MatchResolved(string indexed matchId, address winner, uint256 winnerAmount, uint256 ownerShare);
     
     constructor(
-        address USDTTokenContract,
+        address TLNTokenContract,
         address owner,
         address _moderator,
         address feeHolderAccount
         ) Ownable(owner){
 
         require(feeHolderAccount != address(0), "Invalid fee holder account address");
-        require(USDTTokenContract != address(0), "Invalid USDT token address");
+        require(TLNTokenContract != address(0), "Invalid TLN token address");
         require(_moderator != address(0), "Invalid moderator address");
         require(owner != address(0), "Invalid owner address");
         
-        USDTToken = IERC20(USDTTokenContract);
+        TLNToken = IERC20(TLNTokenContract);
         moderator = _moderator;
         gasFeeHolderAccount = feeHolderAccount;
     }
@@ -86,23 +86,23 @@ contract USDTWager is Ownable, ReentrancyGuard {
 
 
     /**
-     * @notice Allows a user to deposit depositAmount of USDT for match participation.
-     * @dev Caller must first approve the contract to spend depositAmount + serviceCharges USDT.
-     * @param depositAmount The amount of USDT to be deposited for the match.
-     * @param serviceCharges The USDT fee to cover gas costs.
+     * @notice Allows a user to deposit depositAmount of TLN for match participation.
+     * @dev Caller must first approve the contract to spend depositAmount + serviceCharges TLN.
+     * @param depositAmount The amount of TLN to be deposited for the match.
+     * @param serviceCharges The TLN fee to cover gas costs.
     */
 
     function deposit(uint256 depositAmount, uint256 serviceCharges) external nonReentrant  {
         require(players[msg.sender].isMatched == false, "Already deposited, waiting for match");
         // You cannot deposit again until your previous deposit is refunded or the match is completed.
         require(players[msg.sender].depositAmount == 0, "Already deposited.");
-        require(depositAmount >= minDeposit, "Minimum deposit is 5 USDT");
+        require(depositAmount >= minDeposit, "Minimum deposit is 5 TLN");
         require(serviceCharges > 0, "Service charges cannot be zero");
         uint256 amount = depositAmount + serviceCharges;
-        require(USDTToken.balanceOf(msg.sender) >= amount, "Insufficient USDT tokens");
+        require(TLNToken.balanceOf(msg.sender) >= amount, "Insufficient TLN tokens");
 
-        USDTToken.safeTransferFrom(msg.sender, address(this), depositAmount);
-        USDTToken.safeTransferFrom(msg.sender, gasFeeHolderAccount, serviceCharges);
+        TLNToken.safeTransferFrom(msg.sender, address(this), depositAmount);
+        TLNToken.safeTransferFrom(msg.sender, gasFeeHolderAccount, serviceCharges);
         players[msg.sender] = Player(msg.sender, depositAmount, serviceCharges, false,false);
         emit Deposited(msg.sender, depositAmount, serviceCharges);
     }
@@ -143,9 +143,9 @@ contract USDTWager is Ownable, ReentrancyGuard {
         uint256 winnerShare = isXrpNftHolder ? (totalWager * xrpNFTHolderPercentage) / 10000 : (totalWager * winnerPercentage) / 10000;
         uint256 adminShare = totalWager - winnerShare;
 
-        USDTToken.safeTransfer(winner, winnerShare);
+        TLNToken.safeTransfer(winner, winnerShare);
         if (adminShare > 0) {
-            USDTToken.safeTransfer(owner(), adminShare);
+            TLNToken.safeTransfer(owner(), adminShare);
         }
 
         emit MatchResolved(matchId, winner, winnerShare, adminShare);
@@ -169,7 +169,7 @@ contract USDTWager is Ownable, ReentrancyGuard {
         address ownerWallet = owner();
         // Transfer all funds to the admin
         if (totalWager > 0) {
-            USDTToken.safeTransfer(ownerWallet, totalWager);
+            TLNToken.safeTransfer(ownerWallet, totalWager);
         }
 
         emit MatchUnsuccessful(matchId, ownerWallet, totalWager);
@@ -194,9 +194,9 @@ contract USDTWager is Ownable, ReentrancyGuard {
         uint256 adminShare = (totalWager * (10000 - winnerPercentage)) / 10000;
         uint256 splitAmount = (totalWager - adminShare) / 2;
 
-        USDTToken.safeTransfer(owner(), adminShare);
-        USDTToken.safeTransfer(wager.player1, splitAmount);
-        USDTToken.safeTransfer(wager.player2, splitAmount);
+        TLNToken.safeTransfer(owner(), adminShare);
+        TLNToken.safeTransfer(wager.player1, splitAmount);
+        TLNToken.safeTransfer(wager.player2, splitAmount);
 
         emit MatchDraw(matchId, splitAmount, adminShare);
 
@@ -221,10 +221,10 @@ contract USDTWager is Ownable, ReentrancyGuard {
         uint256 refundAmount = (players[userWallet].depositAmount * userRefundPercentage) / 10000;
         uint256 adminShare = players[userWallet].depositAmount - refundAmount;
 
-        USDTToken.safeTransfer(userWallet, refundAmount);
+        TLNToken.safeTransfer(userWallet, refundAmount);
 
         if (adminShare > 0) {
-            USDTToken.safeTransfer(owner(), adminShare);
+            TLNToken.safeTransfer(owner(), adminShare);
         }
         
         emit Refunded(userWallet, refundAmount);
