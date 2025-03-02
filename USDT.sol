@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 
-contract USDTTokenContract is ERC20, Pausable, Ownable {
+contract TLNTokenContract is ERC20, Pausable, Ownable {
     
     /**
      * @dev Constructor that initializes the token with a name, symbol, and total supply.
