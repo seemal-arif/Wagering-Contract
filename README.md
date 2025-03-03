@@ -19,4 +19,8 @@ This project was developed to enhance the transaction volume and circulation of 
   with processing match results, ensuring that the contract remains secure while also being economically viable. This approach balances security and efficiency, 
   allowing for fair match resolutions without burdening the game operators with additional expenses.
 
+## Role:
+- **Lead Blockchain Developer**: Led the blockchain development of the project.
+- **Client Communication & Requirement Gathering**: Managed client communication and gathered project requirements.
+
 --- 
